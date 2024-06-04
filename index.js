@@ -1,18 +1,21 @@
 const express = require("express");
-const database = require("./services/database");
+const cors = require("cors");
 const app = express();
+const port = 3000;
 
-// app.get("/", (req, res) => {
-//   res.send("server Testing 3000 port");
-// });
-
-app.get("/departments", async (req, res) => {
-  try {
-    const result = await database.client.query("SELECT * FROM departments");
-    return res.status(200).json(result.rows);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+app.use(express.json());
+// Use the CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with your React app's URL
+  })
+);
+app.get("/", (req, res) => {
+  res.send("server Testing 3000 port");
 });
 
-app.listen(3000, () => console.log("server start on port 3000"));
+app.use(require("./routes/departmentsRoute"));
+app.use(require("./routes/employeesRoute"));
+app.use(require("./routes/employeeStateRoute"));
+
+app.listen(port, () => console.log(`server start on port ${port}`));
